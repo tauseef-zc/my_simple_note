@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/src/features/note/controllers/note_controller.dart';
+import 'package:note_app/src/features/note/views/archive.dart';
+import 'package:note_app/src/features/note/views/home.dart';
 
 import '../models/note.dart';
 
@@ -32,6 +34,8 @@ class _EditNoteViewState extends State<EditNoteView>
   @override
   void dispose() {
     _controller.dispose();
+    _title.dispose();
+    _note.dispose();
     super.dispose();
   }
 
@@ -52,23 +56,9 @@ class _EditNoteViewState extends State<EditNoteView>
                     icon: const Icon(Icons.check)),
                 IconButton(
                     onPressed: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SizedBox(
-                                height: 300,
-                                child: Center(
-                                  child: ListView(
-                                    children: const [
-                                      ListTile(
-                                        title: Text("Remove Note"),
-                                      )
-                                    ],
-                                  ),
-                                ));
-                          });
+                      _showBottomMenu(context);
                     },
-                    icon: const Icon(Icons.check)),
+                    icon: const Icon(Icons.more_vert)),
               ],
             ),
             body: Padding(
@@ -91,7 +81,8 @@ class _EditNoteViewState extends State<EditNoteView>
                               color:
                                   Theme.of(context).textTheme.bodyLarge?.color),
                     ),
-                    TextField(
+                    Expanded(
+                        child: TextField(
                       controller: _note,
                       decoration: InputDecoration(
                           hintText: "Note",
@@ -105,8 +96,64 @@ class _EditNoteViewState extends State<EditNoteView>
                       style: Theme.of(context).textTheme.bodyMedium,
                       maxLines: null,
                       minLines: null,
-                    )
+                    ))
                   ],
                 ))));
+  }
+
+  void _showBottomMenu(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                onTap: () => onDelete(context),
+                leading: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
+                title: const Text("Remove Note"),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                titleAlignment: ListTileTitleAlignment.center,
+              ),
+              ListTile(
+                onTap: () => onArchive(context),
+                leading: Icon(
+                  note.archived == 0 ? Icons.archive : Icons.unarchive,
+                  color: Colors.lightBlue,
+                ),
+                title: note.archived == 0
+                    ? const Text("Archive Note")
+                    : const Text("Unarchive Note"),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                titleAlignment: ListTileTitleAlignment.center,
+                minVerticalPadding: 5,
+              )
+            ],
+          );
+        });
+  }
+
+  void onDelete(context) {
+    controller.deleteNote(note);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => const HomePage()));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Note removed!'),
+    ));
+  }
+
+  void onArchive(context) {
+    controller.toggleArchived(note);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => const ArchiveView()));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(note.archived == 1
+          ? 'Note added to Archive!'
+          : "Note removed from Archive!"),
+    ));
   }
 }

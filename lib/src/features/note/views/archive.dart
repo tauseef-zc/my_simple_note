@@ -16,8 +16,8 @@ class _ArchiveViewState extends State<ArchiveView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late final NoteController _noteController = NoteController();
-  late Future<List<Note>> _notes;
-  late List<Note> _archivedNotes = [];
+  late Future<List<Note?>> _notes;
+  late List<Note?> _archivedNotes = [];
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -38,22 +38,7 @@ class _ArchiveViewState extends State<ArchiveView>
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        title: Text("Archived Notes",
-            style: Theme.of(context).textTheme.titleLarge),
-        centerTitle: true,
-        actions: [
-          Builder(builder: (context) {
-            return IconButton(
-              onPressed: () => Scaffold.of(context).openDrawer(),
-              icon: const Icon(Icons.menu),
-              padding: const EdgeInsets.all(20),
-            );
-          }),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       drawer: const Drawer(child: PrimaryMenu()),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -77,8 +62,27 @@ class _ArchiveViewState extends State<ArchiveView>
     ));
   }
 
-  FutureBuilder<List<Note>> generateNoteListing() {
-    return FutureBuilder<List<Note>>(
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.transparent,
+      title:
+          Text("Archive Notes", style: Theme.of(context).textTheme.titleLarge),
+      centerTitle: true,
+      actions: [
+        Builder(builder: (context) {
+          return IconButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: const Icon(Icons.menu),
+            padding: const EdgeInsets.all(20),
+          );
+        }),
+      ],
+    );
+  }
+
+  FutureBuilder<List<Note?>> generateNoteListing() {
+    return FutureBuilder<List<Note?>>(
       future: _notes,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -101,10 +105,12 @@ class _ArchiveViewState extends State<ArchiveView>
                 itemCount: _archivedNotes.length,
                 itemBuilder: (context, index) {
                   final note = _archivedNotes[index];
-                  return ArchiveCard(
-                      note: note,
-                      onArchived: onNoteArchived,
-                      onUpdate: onNoteUpdate);
+                  return note != null
+                      ? ArchiveCard(
+                          note: note,
+                          onArchived: onNoteArchived,
+                          onUpdate: onNoteUpdate)
+                      : Container();
                 },
               ),
             );
@@ -115,7 +121,7 @@ class _ArchiveViewState extends State<ArchiveView>
     );
   }
 
-  Future<List<Note>> _fetchArchiveNotes() async {
+  Future<List<Note?>> _fetchArchiveNotes() async {
     return await _noteController.getArchivedNotes(_searchController.text);
   }
 
@@ -129,7 +135,7 @@ class _ArchiveViewState extends State<ArchiveView>
 
   void onNoteUpdate(Note note) {
     _noteController.updateNote(note: note);
-    int index = _archivedNotes.indexWhere((n) => n.id == note.id);
+    int index = _archivedNotes.indexWhere((n) => n?.id == note.id);
 
     setState(() {
       _archivedNotes[index] = note;

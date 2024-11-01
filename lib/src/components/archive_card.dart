@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/src/features/note/views/edit_note.dart';
+import 'package:note_app/src/helper/Animations.dart';
 import '../features/note/models/note.dart';
 
 class ArchiveCard extends StatelessWidget {
@@ -17,11 +18,13 @@ class ArchiveCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        Note updatedNote = await Navigator.push(
+        final updatedNote = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => EditNoteView(note: note)),
+          Animations().createRoute(EditNoteView(note: note)),
         );
-        onUpdate(updatedNote);
+        if (updatedNote != null) {
+          onUpdate(updatedNote);
+        }
       },
       child: Dismissible(
           key: Key(note.title),

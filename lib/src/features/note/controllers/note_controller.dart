@@ -4,7 +4,7 @@ import 'package:note_app/src/features/note/repositories/note_repository.dart';
 class NoteController {
   final NoteRepository _repository = NoteRepository();
 
-  Future<Note> addNote({
+  Future<Note?> addNote({
     required String title,
     required String note,
   }) async {
@@ -22,7 +22,7 @@ class NoteController {
     }
   }
 
-  Future<Note> updateNote({required Note note}) async {
+  Future<Note?> updateNote({required Note note}) async {
     try {
       final result = await _repository.update(note, 'id', note.id);
       return result;
@@ -31,19 +31,25 @@ class NoteController {
     }
   }
 
-  Future<List<Note>> getNotes(String searchQuery) async {
+  Future<Future<List<Note?>>> getNotes(String searchQuery) async {
     try {
-      final List<Map> notes = await _repository.search(searchQuery, 0, 0);
-      return notes.map((noteMap) => _parseNoteFromMap(noteMap)).toList();
+      return _repository.search(searchQuery, 0, 0);
     } catch (e) {
       throw Exception('Failed to fetch notes: $e');
     }
   }
 
-  Future<List<Note>> getArchivedNotes(String searchQuery) async {
+  Future<List<Note?>> getArchivedNotes(String searchQuery) async {
     try {
-      final List<Map> notes = await _repository.search(searchQuery, 1, 0);
-      return notes.map((noteMap) => _parseNoteFromMap(noteMap)).toList();
+      return await _repository.search(searchQuery, 1, 0);
+    } catch (e) {
+      throw Exception('Failed to fetch notes: $e');
+    }
+  }
+
+  Future<List<Note>> getDeletedNotes() async {
+    try {
+      return await _repository.getDeleted();
     } catch (e) {
       throw Exception('Failed to fetch notes: $e');
     }
@@ -51,23 +57,20 @@ class NoteController {
 
   void toggleArchived(Note note) async {
     note.archived = note.archived == 0 ? 1 : 0;
-    print(note.toString());
     await _repository.update(note, 'id', note.id);
   }
 
-  Note _parseNoteFromMap(Map noteMap) {
-    try {
-      return Note(
-        id: noteMap['id'] as int,
-        title: noteMap['title'] as String,
-        note: noteMap['note'] as String,
-        archived: (noteMap['archived'] as int?) ?? 0,
-        trashed: (noteMap['trashed'] as int?) ?? 0,
-        createdAt: DateTime.parse(noteMap['created_at'] as String),
-        updatedAt: DateTime.parse(noteMap['updated_at'] as String),
-      );
-    } catch (e) {
-      throw Exception('Failed to parse note from database: $e');
-    }
+  Future<Note?> deleteNote(Note note) async {
+    note.trashed = 1;
+    return await _repository.update(note, 'id', note.id);
+  }
+
+  Future<Note?> restoreNote(Note note) async {
+    note.trashed = 0;
+    return await _repository.update(note, 'id', note.id);
+  }
+
+  void emptyTrash() async {
+    await _repository.forceDelete();
   }
 }

@@ -4,6 +4,20 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseConnection {
   static const databaseName = "notes";
+  static final DatabaseConnection _instance = DatabaseConnection._internal();
+  static Database? _database;
+
+  DatabaseConnection._internal();
+
+  factory DatabaseConnection() {
+    return _instance;
+  }
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await initDatabase();
+    return _database!;
+  }
 
   static Future<Database> initDatabase() async {
     final path = join(await getDatabasesPath(), databaseName);
@@ -12,20 +26,25 @@ class DatabaseConnection {
     });
   }
 
-  static Future<int> insert(String tableName, Map<String, dynamic> data) async {
-    final db = await initDatabase();
+  Future<int> insert(String tableName, Map<String, dynamic> data) async {
+    final db = await database;
     return await db.insert(tableName, data,
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  static Future<List<Map>> query(String query) async {
-    final db = await initDatabase();
+  Future<List<Map>> query(String query) async {
+    final db = await database;
     return await db.rawQuery(query);
   }
 
-  static Future<int> update(String tableName, Map<String, dynamic> data,
-      String where, dynamic value) async {
-    final db = await initDatabase();
+  Future<int> update(String tableName, Map<String, dynamic> data, String where,
+      dynamic value) async {
+    final db = await database;
     return db.update(tableName, data, where: '$where=?', whereArgs: [value]);
+  }
+
+  Future<int> delete(String tableName, String where, dynamic value) async {
+    final db = await database;
+    return db.delete(tableName, where: '$where=?', whereArgs: [value]);
   }
 }

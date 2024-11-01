@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/src/features/note/views/archive.dart';
 import 'package:note_app/src/features/note/views/home.dart';
+import 'package:note_app/src/features/note/views/trashed.dart';
 
 class PrimaryMenu extends StatefulWidget {
   const PrimaryMenu({super.key});
@@ -10,9 +11,12 @@ class PrimaryMenu extends StatefulWidget {
 }
 
 class _PrimaryMenuState extends State<PrimaryMenu> {
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -28,25 +32,29 @@ class _PrimaryMenuState extends State<PrimaryMenu> {
       children: [
         DrawerHeader(
           padding: const EdgeInsets.all(20),
-          child: Text(
-            'Smart Notes',
-            style: TextStyle(
-                height: 1.25,
-                fontSize: 32,
-                fontWeight: Theme.of(context).textTheme.titleLarge?.fontWeight),
+          child: Center(
+            child: Text(
+              'My Simple Notes',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(fontSize: 36),
+            ),
           ),
         ),
         ListTile(
           title: const Text('Notes'),
+          leading: const Icon(Icons.notes),
           selected: _selectedIndex == 0,
           onTap: () {
-            _onItemTapped(1);
+            _onItemTapped(0);
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (_) => const HomePage()));
           },
         ),
         ListTile(
           title: const Text('Archived'),
+          leading: const Icon(Icons.archive),
           selected: _selectedIndex == 1,
           onTap: () {
             _onItemTapped(1);
@@ -55,13 +63,18 @@ class _PrimaryMenuState extends State<PrimaryMenu> {
           },
         ),
         ListTile(
-          title: const Text('School'),
+          title: const Text('Trash'),
+          leading: const Icon(Icons.delete),
           selected: _selectedIndex == 2,
           onTap: () {
             _onItemTapped(2);
-            Navigator.pop(context);
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (_) => const TrashedView()));
           },
         ),
+        const SizedBox(
+          height: 50,
+        )
       ],
     );
   }

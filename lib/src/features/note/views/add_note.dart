@@ -40,7 +40,7 @@ class _AddNoteViewState extends State<AddNoteView>
         actions: [
           IconButton(
               onPressed: () {
-                Future<Note> note =
+                Future<Note?> note =
                     controller.addNote(title: _title.text, note: _note.text);
                 Navigator.pop(context, note);
               },
@@ -62,9 +62,10 @@ class _AddNoteViewState extends State<AddNoteView>
                 minLines: null,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: Theme.of(context).textTheme.bodyLarge?.color),
-                autofocus: true,
+                autofocus: false,
               ),
-              TextField(
+              Expanded(
+                  child: TextField(
                 controller: _note,
                 decoration: InputDecoration(
                     hintText: "Note",
@@ -76,7 +77,7 @@ class _AddNoteViewState extends State<AddNoteView>
                 style: Theme.of(context).textTheme.bodyMedium,
                 maxLines: null,
                 minLines: null,
-              )
+              ))
             ],
           )),
     ));

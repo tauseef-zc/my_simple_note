@@ -23,7 +23,7 @@ class NoteTheme {
   static TextTheme lightTextTheme = TextTheme(
       headlineLarge: GoogleFonts.poppins(
         color: lightBlue,
-        fontSize: 64,
+        fontSize: 48,
         height: 0.9,
         fontWeight: FontWeight.w600,
       ),

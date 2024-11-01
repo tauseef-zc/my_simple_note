@@ -10,7 +10,7 @@ class TitleWidget extends StatelessWidget {
       return Wrap(
         children: [
           Text(
-            "Smart",
+            "My Simple",
             style: textTheme.headlineLarge,
           ),
           Text(
