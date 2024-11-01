@@ -1,6 +1,7 @@
 import 'package:note_app/src/features/note/models/note.dart';
 import 'package:note_app/src/utils/database/connection.dart';
 import 'package:note_app/src/utils/database/query_builder.dart';
+
 import '../../../utils/database/model.dart';
 
 class NoteRepository {

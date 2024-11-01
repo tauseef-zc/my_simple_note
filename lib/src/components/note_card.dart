@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/src/features/note/views/edit_note.dart';
+
 import '../features/note/models/note.dart';
 import '../helper/Animations.dart';
 

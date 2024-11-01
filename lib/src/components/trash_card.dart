@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../features/note/models/note.dart';
 
 class TrashCard extends StatelessWidget {

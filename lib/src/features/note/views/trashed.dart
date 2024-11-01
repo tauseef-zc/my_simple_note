@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/src/components/primary_menu.dart';
-import 'package:note_app/src/components/search_field.dart';
 import 'package:note_app/src/components/trash_card.dart';
+
 import '../controllers/note_controller.dart';
 import '../models/note.dart';
 
