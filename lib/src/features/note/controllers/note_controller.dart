@@ -1,8 +1,9 @@
 import 'package:note_app/src/features/note/models/note.dart';
 import 'package:note_app/src/features/note/repositories/note_repository.dart';
+import 'package:note_app/src/utils/database/db_manager.dart';
 
 class NoteController {
-  final NoteRepository _repository = NoteRepository();
+  final NoteRepository _repository = NoteRepository(DatabaseManager.unknown());
 
   Future<Note?> addNote({
     required String title,

@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:note_app/src/utils/database/model.dart';
 
 class Note extends Model {
@@ -29,7 +30,7 @@ class Note extends Model {
       "note": note,
       "archived": archived,
       "trashed": trashed,
-      "updated_at": DateTime.now().toIso8601String()
+      "updated_at": DateFormat("y-M-dd H:mm:ss").format(DateTime.now())
     };
 
     if (id != null || id != 0) {
@@ -39,11 +40,12 @@ class Note extends Model {
     return item;
   }
 
-  factory Note.fromJson(Map<String, dynamic> json) => Note(
-      title: json["title"],
-      note: json["note"],
-      archived: json["archived"] ?? 0,
-      trashed: json['trashed'] ?? 0,
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at']);
+  static fromJson(Map<dynamic, dynamic> json) => Note(
+      id: json['id'] as int,
+      title: json['title'] as String,
+      note: json['note'] as String,
+      archived: (json['archived'] as int?) ?? 0,
+      trashed: (json['trashed'] as int?) ?? 0,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String));
 }

@@ -18,14 +18,19 @@ class QueryBuilder {
   }
 
   QueryBuilder where(String column, String operator, dynamic value) {
+    var valueItem = '';
     if (value != "") {
       if (operator == "LIKE" || operator == "like") {
-        value = "%$value%";
+        valueItem = '"%$value%"';
+      } else if (value is int || value == value.roundToDouble()) {
+        valueItem = '$value';
+      } else {
+        valueItem = '"$value"';
       }
       if (_where.isEmpty) {
-        _where += '$column $operator "$value" ';
+        _where += '$column $operator $valueItem ';
       } else {
-        _where += 'AND $column $operator "$value" ';
+        _where += 'AND $column $operator $valueItem ';
       }
     }
     return this;

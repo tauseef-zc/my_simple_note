@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Smart Notes',
+      title: 'My Simple Notes',
       theme: NoteTheme.lightTheme,
       darkTheme: NoteTheme.darkTheme,
       themeMode: ThemeMode.system,
