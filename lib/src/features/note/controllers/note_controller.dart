@@ -1,9 +1,15 @@
 import 'package:note_app/src/features/note/models/note.dart';
 import 'package:note_app/src/features/note/repositories/note_repository.dart';
-import 'package:note_app/src/utils/database/db_manager.dart';
+import 'package:sqflite/sqflite.dart';
 
 class NoteController {
-  final NoteRepository _repository = NoteRepository(DatabaseManager.unknown());
+  late NoteRepository _repository = NoteRepository();
+
+  NoteController();
+
+  NoteController.withTest(Future<Database> database) {
+    _repository = NoteRepository.withTest(database);
+  }
 
   Future<Note?> addNote({
     required String title,
@@ -62,13 +68,11 @@ class NoteController {
   }
 
   Future<Note?> deleteNote(Note note) async {
-    note.trashed = 1;
-    return await _repository.update(note, 'id', note.id);
+    return await _repository.delete(note);
   }
 
   Future<Note?> restoreNote(Note note) async {
-    note.trashed = 0;
-    return await _repository.update(note, 'id', note.id);
+    return await _repository.restore(note);
   }
 
   void emptyTrash() async {

@@ -1,15 +1,30 @@
 import 'package:note_app/src/features/note/models/note.dart';
 import 'package:note_app/src/utils/database/db_manager.dart';
 import 'package:note_app/src/utils/database/query_builder.dart';
-
-import '../../../utils/database/model.dart';
+import 'package:sqflite/sqflite.dart';
 
 class NoteRepository {
-  final DatabaseManager _db;
+  late DatabaseManager _db = DatabaseManager.defaultDatabase();
 
-  NoteRepository(this._db);
+  NoteRepository();
+
+  NoteRepository.withTest(Future<Database> database) {
+    _db = DatabaseManager.testDatabase(database);
+  }
 
   Future<Note?> find(int id) async {
+    String query = QueryBuilder()
+        .table(Note.getTableName())
+        .where('id', '=', id)
+        .where('trashed', '=', 0)
+        .limit(1)
+        .execute();
+
+    List<Map> records = await _db.query(query);
+    return records.isNotEmpty ? _mapToNote(records.first) : null;
+  }
+
+  Future<Note?> findWithTrashed(int id) async {
     String query = QueryBuilder()
         .table(Note.getTableName())
         .where('id', '=', id)
@@ -20,18 +35,28 @@ class NoteRepository {
     return records.isNotEmpty ? _mapToNote(records.first) : null;
   }
 
-  Future<Note?> insert(Model model) async {
+  Future<Note?> insert(Note model) async {
     int id = await _db.insert(Note.getTableName(), model.toJson());
-    return find(id);
+    return await find(id);
   }
 
-  Future<Note?> update(Model model, String whereColumn, dynamic value) async {
+  Future<Note?> update(Note model, String whereColumn, dynamic value) async {
     await _db.update(Note.getTableName(), model.toJson(), whereColumn, value);
-    return find(value as int);
+    return await find(value as int);
   }
 
-  Future<void> delete(String whereColumn, dynamic value) async {
-    await _db.delete(Note.getTableName(), whereColumn, value);
+  Future<Note?> delete(Note model) async {
+    model.trashed = 1;
+    int id =
+        await _db.update(Note.getTableName(), model.toJson(), 'id', model.id);
+    return await findWithTrashed(id);
+  }
+
+  Future<Note?> restore(Note model) async {
+    model.trashed = 0;
+    int id =
+        await _db.update(Note.getTableName(), model.toJson(), 'id', model.id);
+    return await find(id);
   }
 
   Future<int> forceDelete() async {
@@ -48,8 +73,6 @@ class NoteRepository {
         .orderBy('updated_at', 'desc')
         .execute();
     List<Map> records = await _db.query(query);
-    print(records);
-    print(records.map((record) => _mapToNote(record)).toList());
     return records.map((record) => _mapToNote(record)).toList();
   }
 

@@ -40,12 +40,14 @@ class Note extends Model {
     return item;
   }
 
-  static fromJson(Map<dynamic, dynamic> json) => Note(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      note: json['note'] as String,
-      archived: (json['archived'] as int?) ?? 0,
-      trashed: (json['trashed'] as int?) ?? 0,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String));
+  static fromJson(Map<dynamic, dynamic> record) => Note(
+      id: record['id'] as int? ?? 0,
+      title: record['title'] as String? ?? '',
+      note: record['note'] as String? ?? '',
+      archived: (record['archived'] as int?) ?? 0,
+      trashed: (record['trashed'] as int?) ?? 0,
+      createdAt: DateTime.tryParse(record['created_at'] as String? ?? '') ??
+          DateTime.now(),
+      updatedAt: DateTime.tryParse(record['updated_at'] as String? ?? '') ??
+          DateTime.now());
 }
