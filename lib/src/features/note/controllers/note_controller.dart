@@ -16,6 +16,10 @@ class NoteController {
     required String note,
   }) async {
     try {
+      if (title == '' && note == '') {
+        return null;
+      }
+
       final newNote = Note(
         title: title,
         note: note,
