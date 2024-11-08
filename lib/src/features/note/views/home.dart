@@ -48,9 +48,13 @@ class _HomePageState extends State<HomePage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 15),
-              const TitleWidget(),
-              const SizedBox(height: 30),
+              SizedBox(
+                  height: MediaQuery.of(context).size.width > 600 ? 0 : 15),
+              MediaQuery.of(context).size.width > 600
+                  ? Container()
+                  : const TitleWidget(),
+              SizedBox(
+                  height: MediaQuery.of(context).size.width > 600 ? 15 : 30),
               SearchField(
                 search: _searchController,
                 onSearch: onNoteSearch,
@@ -69,6 +73,8 @@ class _HomePageState extends State<HomePage>
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
+      title:
+          MediaQuery.of(context).size.width > 600 ? const TitleWidget() : null,
       actions: [
         Builder(builder: (context) {
           return IconButton(
@@ -113,8 +119,9 @@ class _HomePageState extends State<HomePage>
             _localNotes = snapshot.data!;
             return Expanded(
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount:
+                      MediaQuery.of(context).size.width > 600 ? 4 : 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),

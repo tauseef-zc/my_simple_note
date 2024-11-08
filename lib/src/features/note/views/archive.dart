@@ -98,8 +98,9 @@ class _ArchiveViewState extends State<ArchiveView>
             _archivedNotes = snapshot.data!;
             return Expanded(
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount:
+                      MediaQuery.of(context).size.width > 600 ? 4 : 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),

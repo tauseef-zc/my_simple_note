@@ -45,7 +45,7 @@ class _TrashedViewState extends State<TrashedView>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 25),
+            SizedBox(height: MediaQuery.of(context).size.width > 600 ? 15 : 25),
             generateNoteListing(),
           ],
         ),
@@ -111,8 +111,9 @@ class _TrashedViewState extends State<TrashedView>
             _trashedNotes = snapshot.data!;
             return Expanded(
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount:
+                      MediaQuery.of(context).size.width > 600 ? 4 : 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
