@@ -38,7 +38,7 @@ class NoteController {
       final result = await _repository.update(note, 'id', note.id);
       return result;
     } catch (e) {
-      throw Exception('Failed to add note: $e');
+      throw Exception('Failed to update note: $e');
     }
   }
 
@@ -54,7 +54,7 @@ class NoteController {
     try {
       return await _repository.search(searchQuery, 1, 0);
     } catch (e) {
-      throw Exception('Failed to fetch notes: $e');
+      throw Exception('Failed to fetch archive notes: $e');
     }
   }
 
@@ -62,7 +62,7 @@ class NoteController {
     try {
       return await _repository.getDeleted();
     } catch (e) {
-      throw Exception('Failed to fetch notes: $e');
+      throw Exception('Failed to delete notes: $e');
     }
   }
 
